@@ -84,6 +84,7 @@ The application follows a **Modular Frontend Architecture**:
 
 ## 👥 Team
 - **Maria** - Lead Developer & Designer
+- **Kripa** - Lead Developer and Designer
 
 ---
 
