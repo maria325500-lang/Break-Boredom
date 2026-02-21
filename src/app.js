@@ -723,20 +723,26 @@ eventsData.forEach((event, index) => {
     }
 });
 
-// Populate Location Datalist
+// Populate Location Dropdown
 function populateLocationSuggestions() {
-    const datalist = document.getElementById('locationList');
-    if (!datalist) return;
+    const select = document.getElementById('citySearch');
+    if (!select) return;
     const locations = [...new Set(eventsData.map(e => {
         // Extract city from location string (usually first part before comma)
         return e.location.split(',')[0].trim();
-    }))];
+    }))].sort();
 
-    datalist.innerHTML = '';
+    // Keep the first placeholder option
+    const placeholder = select.options[0];
+    select.innerHTML = '';
+    select.appendChild(placeholder);
+
     locations.forEach(loc => {
         const option = document.createElement('option');
         option.value = loc;
-        datalist.appendChild(option);
+        option.textContent = loc;
+        option.style.color = 'black'; // Ensure text is visible on light/dark mode
+        select.appendChild(option);
     });
 }
 window.addEventListener('DOMContentLoaded', populateLocationSuggestions);
@@ -900,8 +906,7 @@ searchBtn.addEventListener('click', () => {
     document.getElementById('events').scrollIntoView({ behavior: 'smooth' });
 });
 
-citySearch.addEventListener('input', applyFilters);
-citySearch.addEventListener('keyup', applyFilters);
+citySearch.addEventListener('change', applyFilters);
 
 // Modal Logic
 let map;
