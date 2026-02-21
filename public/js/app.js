@@ -795,9 +795,8 @@ function renderEvents(events) {
                     <span style="color: #fbbf24; font-size: 0.75rem; font-weight: 600;"><i class="ri-star-fill"></i> ${event.rating}</span>
                 </div>
                 <h3 class="event-title">${event.title}</h3>
-                <div style="color: var(--secondary); font-size: 0.8rem; font-weight: 600; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.2rem;">
-                    <i class="ri-user-star-line"></i> Hosted by: ${event.host}
-                    ${event.verified ? '<i class="ri-verified-badge-fill" style="color: #3b82f6; margin-left: 0.2rem;" title="Authorized Organization"></i>' : '<span style="color: var(--text-muted); font-size: 0.7rem; font-weight: normal; margin-left: 0.3rem;">(Community Event)</span>'}
+                <div style="margin-bottom: 0.3rem;">
+                    <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 500;">${event.verified ? '<i class="ri-verified-badge-fill" style="color: #3b82f6;" title="Verified Location"></i> Verified' : '(Community Activity)'}</span>
                 </div>
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.8rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">
                     ${event.description}
@@ -1212,7 +1211,7 @@ regForm.addEventListener('submit', (e) => {
         // Update success message to reference the host
         const successParagraph = successMsg.querySelector('p');
         if (successParagraph) {
-            successParagraph.innerHTML = `Your registration details have been sent to <strong>${currentEventHost}</strong>. They will follow up with you shortly!`;
+            successParagraph.innerHTML = `Your registration details have been sent. The organizers will follow up with you shortly!`;
         }
 
         successMsg.classList.remove('hidden');
