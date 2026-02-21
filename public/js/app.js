@@ -854,14 +854,10 @@ function applyFilters() {
         filtered = filtered.filter(e => e.category === category);
     }
 
-    // 2. Filter by Search Query
+    // 2. Filter by Search Query (Strictly by Location now)
     if (query) {
         filtered = filtered.filter(e =>
-            e.title.toLowerCase().includes(query) ||
-            e.location.toLowerCase().includes(query) ||
-            e.host.toLowerCase().includes(query) ||
-            e.description.toLowerCase().includes(query) ||
-            e.categoryLabel.toLowerCase().includes(query)
+            e.location.toLowerCase().includes(query)
         );
     }
 
