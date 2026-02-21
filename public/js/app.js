@@ -746,6 +746,7 @@ function populateLocationSuggestions() {
     });
 }
 window.addEventListener('DOMContentLoaded', populateLocationSuggestions);
+populateLocationSuggestions(); // Call immediately in case DOM is already ready
 
 // DOM Elements
 const eventGrid = document.getElementById('eventGrid');
