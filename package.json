@@ -1,0 +1,16 @@
+{
+  "name": "break-boredom",
+  "version": "1.0.0",
+  "description": "Premium vacation event discovery platform",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "npx serve public"
+  },
+  "keywords": [
+    "travel",
+    "events",
+    "vacation"
+  ],
+  "author": "Maria",
+  "license": "MIT"
+}

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Break Boredom | Discover Vacation Events</title>
+    <meta name="description" content="Find exciting events, activities, and goals to conquer your vacation boredom.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="ri-compass-discover-fill"></i> BreakBoredom
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#events">Discover Events</a></li>
+            <li><a href="#about">About</a></li>
+        </ul>
+        <div style="display: flex; gap: 1rem;">
+            <button class="nav-btn" id="openAddEventBtn"
+                style="background: transparent; border: 1px solid var(--primary); color: var(--text-main);">Create
+                Event</button>
+            <button class="nav-btn"
+                onclick="document.getElementById('events').scrollIntoView({behavior: 'smooth'})">Find
+                Activities</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="home" class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <h1 class="animate-up">Bored on Vacation?</h1>
+            <p class="animate-up delay-1">Discover local events, join creative workshops, and meet new people. Turn your
+                free time into an unforgettable experience.</p>
+            <div class="search-bar animate-up delay-2">
+                <i class="ri-search-line"></i>
+                <input type="text" id="citySearch"
+                    placeholder="Enter your district (e.g., Munnar, Wayanad, Kochi, Alleppey)...">
+                <button id="searchBtn">Explore Nearby</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Events Section -->
+    <section id="events" class="events-section">
+        <div class="section-title">
+            <h2>Trending Activities</h2>
+            <p>Find the perfect event to match your vibe today.</p>
+        </div>
+
+        <!-- Categories / Filtering -->
+        <div class="filter-bar"
+            style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div
+                style="display: flex; gap: 0.8rem; overflow-x: auto; padding-bottom: 0.5rem; -webkit-overflow-scrolling: touch;">
+                <button class="filter-btn active" data-filter="all">All Activities</button>
+                <button class="filter-btn" data-filter="creative">Creative Workshops</button>
+                <button class="filter-btn" data-filter="social">Social Gatherings</button>
+                <button class="filter-btn" data-filter="wellness">Wellness & Fitness</button>
+                <button class="filter-btn" data-filter="hackathon">Hackathons</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <label for="sortEvents" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Sort
+                    By:</label>
+                <select id="sortEvents" class="nav-btn"
+                    style="background: var(--glass-bg); color: var(--text-main); border: 1px solid var(--glass-border); padding: 0.4rem 0.8rem; outline: none;">
+                    <option value="upcoming" style="color: black;">Upcoming First</option>
+                    <option value="recent" style="color: black;">Most Recent</option>
+                    <option value="closest" style="color: black;">Closest to Date</option>
+                </select>
+                <input type="date" id="targetDate" class="nav-btn"
+                    style="display: none; background: var(--glass-bg); color: var(--text-main); border: 1px solid var(--glass-border); padding: 0.3rem 0.8rem;">
+            </div>
+        </div>
+
+        <!-- Event Grid -->
+        <div class="event-grid" id="eventGrid">
+            <!-- Populated by JS -->
+        </div>
+    </section>
+
+    <!-- Registration Modal -->
+    <div class="modal" id="registrationModal">
+        <div class="modal-content glass-panel" style="padding: 2.5rem;">
+            <span class="close-btn" id="closeModal">&times;</span>
+            <div class="modal-body">
+                <div class="modal-header">
+                    <h2 class="modal-event-title" id="modalEventTitle">Event Details</h2>
+                    <p class="modal-event-date" id="modalEventDate"></p>
+                </div>
+                <!-- Map Container -->
+                <div id="eventMap"
+                    style="height: 200px; width: 100%; border-radius: 12px; margin: 1rem 0; border: 1px solid var(--glass-border);">
+                </div>
+                <div id="distanceInfo"
+                    style="margin-bottom: 1rem; font-size: 0.9rem; font-weight: 600; color: var(--primary);"></div>
+                <div class="event-reviews" style="margin-bottom: 1.5rem;">
+                    <h4 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-muted);">What others are
+                        saying:
+                    </h4>
+                    <div id="eventReviewsList" style="max-height: 150px; overflow-y: auto; padding-right: 0.5rem;">
+                        <!-- Reviews populated here -->
+                    </div>
+                </div>
+
+                <form id="registrationForm" class="registration-form">
+                    <div class="form-group">
+                        <label for="regName">Full Name</label>
+                        <input type="text" id="regName" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">Email Address</label>
+                        <input type="email" id="regEmail" required placeholder="john@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="regGoals">What do you hope to achieve?</label>
+                        <textarea id="regGoals" rows="3" placeholder="I want to learn something new..."></textarea>
+                    </div>
+
+                    <hr style="border: 0; height: 1px; background: var(--glass-border); margin: 1.5rem 0;">
+
+                    <div class="form-group">
+                        <label for="userLocation"><i class="ri-route-line"></i> How are you getting there?</label>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <input type="text" id="userLocation" placeholder="Enter your home city..."
+                                style="flex: 1; min-width: 200px;">
+                            <button type="button" id="getDirectionsBtn" class="filter-btn"
+                                style="white-space: nowrap;">Get
+                                Route Info</button>
+                        </div>
+                        <div id="travelInstructions" class="travel-instructions hidden"
+                            style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px dashed var(--glass-border); font-size: 0.9rem;">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn btn-glow">Confirm Registration</button>
+                </form>
+                <div id="successMessage" class="success-message hidden">
+                    <i class="ri-checkbox-circle-fill"></i>
+                    <h4>You're all set!</h4>
+                    <p>We've sent the event details to your email.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Event Modal -->
+    <div class="modal" id="addEventModal">
+        <div class="modal-content glass-panel">
+            <span class="close-modal" id="closeAddEventModal">&times;</span>
+            <div class="modal-header">
+                <h3>Host a New Event <i class="ri-calendar-event-line"></i></h3>
+                <p class="text-sm text-gray">Share your activity or gathering with the community.</p>
+            </div>
+
+            <form id="addEventForm" class="registration-form">
+                <div class="form-group">
+                    <label for="newEventTitle">Event Title</label>
+                    <input type="text" id="newEventTitle" required placeholder="e.g. Weekend Board Game Night">
+                </div>
+                <div class="form-group">
+                    <label for="newEventHost">Host Name / Organization</label>
+                    <input type="text" id="newEventHost" required placeholder="e.g. The Game Club">
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="newEventCategory">Category</label>
+                        <select id="newEventCategory" required
+                            style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--glass-border); border-radius: 8px; color: white;">
+                            <option value="outdoor" style="color: black;">Outdoor Adventures</option>
+                            <option value="creative" style="color: black;">Creative Workshops</option>
+                            <option value="social" style="color: black;">Social Gatherings</option>
+                            <option value="wellness" style="color: black;">Wellness & Fitness</option>
+                            <option value="hackathon" style="color: black;">Hackathons</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="newEventDate">Date & Time</label>
+                        <input type="text" id="newEventDate" required placeholder="e.g. This Friday, 6 PM">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="newEventLocation">Location (City, State)</label>
+                    <input type="text" id="newEventLocation" required placeholder="e.g. Austin, TX">
+                </div>
+                <div class="form-group">
+                    <label for="newEventImage">Image URL (Optional)</label>
+                    <input type="url" id="newEventImage" placeholder="https://picsum.photos/seed/any/600/400">
+                </div>
+                <button type="submit" class="submit-btn btn-glow"
+                    style="background: var(--secondary); margin-top: 1rem;">Publish Event</button>
+            </form>
+            <div id="addEventSuccessMessage" class="success-message hidden">
+                <i class="ri-checkbox-circle-fill" style="color: var(--secondary);"></i>
+                <h4>Event Published!</h4>
+                <p>Your event is now live and people can start registering.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="logo">
+                <i class="ri-compass-discover-fill"></i> BreakBoredom
+            </div>
+            <p>Transforming downtime into lifetime memories.</p>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 BreakBoredom Inc. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="../src/app.js"></script>
+</body>
+
+</html>
