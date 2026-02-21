@@ -713,6 +713,34 @@ const eventsData = [
     },
 ];
 
+// Update eventsData with registered counts
+eventsData.forEach((event, index) => {
+    // Assigning some as unlimited, others with random counts for demonstration
+    if (index % 5 === 0) {
+        event.registered = 'unlimited';
+    } else {
+        event.registered = Math.floor(Math.random() * 50) + 10;
+    }
+});
+
+// Populate Location Datalist
+function populateLocationSuggestions() {
+    const datalist = document.getElementById('locationList');
+    if (!datalist) return;
+    const locations = [...new Set(eventsData.map(e => {
+        // Extract city from location string (usually first part before comma)
+        return e.location.split(',')[0].trim();
+    }))];
+
+    datalist.innerHTML = '';
+    locations.forEach(loc => {
+        const option = document.createElement('option');
+        option.value = loc;
+        datalist.appendChild(option);
+    });
+}
+window.addEventListener('DOMContentLoaded', populateLocationSuggestions);
+
 // DOM Elements
 const eventGrid = document.getElementById('eventGrid');
 const filterBtns = document.querySelectorAll('.filter-btn');
@@ -770,6 +798,9 @@ function renderEvents(events) {
                 <div class="event-meta">
                     <span><i class="ri-calendar-event-line"></i> ${event.date}</span>
                     <span><i class="ri-map-pin-line"></i> ${event.location}</span>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--primary); font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.3rem;">
+                    <i class="ri-group-line"></i> Registration: ${event.registered === 'unlimited' ? 'Unlimited' : event.registered + ' registered'}
                 </div>
                 <button class="register-btn" data-id="${event.id}">View Details & Join</button>
             </div>
@@ -903,7 +934,11 @@ function openModal(eventId) {
         currentEventLocation = event.location;
         currentEventHost = event.host;
         modalEventTitle.innerHTML = `${event.title} <span style="font-size: 1rem; color: #fbbf24; margin-left: 0.5rem;"><i class="ri-star-fill"></i> ${event.rating}</span>`;
-        modalEventDate.textContent = `${event.date} @ ${event.location}`;
+        modalEventDate.innerHTML = `
+            <div style="margin-bottom: 0.5rem;"><i class="ri-calendar-event-line"></i> ${event.date}</div>
+            <div style="margin-bottom: 0.5rem;"><i class="ri-map-pin-line"></i> ${event.location}</div>
+            <div style="color: var(--primary); font-weight: 600;"><i class="ri-group-line"></i> Registration: ${event.registered === 'unlimited' ? 'Unlimited' : event.registered + ' registered'}</div>
+        `;
 
         const existingDesc = document.getElementById('modalEventDescription');
         if (!existingDesc) {
@@ -1019,6 +1054,7 @@ addEventForm.addEventListener('submit', (e) => {
         description: "A wonderful new event added by a community member. Check back later for more details!",
         verified: false, // Community added events are not verified by default
         rating: 5.0, // Default for new events 
+        registered: Math.floor(Math.random() * 10) + 1, // New events start with some interest
         reviews: [] // Empty reviews
     };
 
@@ -1031,6 +1067,7 @@ addEventForm.addEventListener('submit', (e) => {
     setTimeout(() => {
         // Push and render
         eventsData.unshift(newEvent); // Add to beginning of array
+        populateLocationSuggestions(); // Refresh search suggestions
 
         // Update filters appropriately
         const activeFilter = document.querySelector('.filter-btn.active').getAttribute('data-filter');
